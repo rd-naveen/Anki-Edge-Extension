@@ -1,19 +1,25 @@
 # Anki-Edge-Extension
-A Simple Anki Flash Card Creator Extension for Local Deployments
-
-Creatd this Simple edge extension to make the fash card creations easy from the browser,Some example scenarios, but not limited to.
+Creatd this Simple edge extension to make the fash card creations easy from the browser, Some example scenarios, but not limited to.
 * `Want to create a flashcard for important facts found on the internet articles/blogs?`
 
+
 ### Disclaimer: 
-* No Security features/functions used in these code. Please implement other controlls before using in the production.
+* No Security features used in these code. Please implement other security controlls before using in the production.
 * Some of the functions are not working as indended, but kept them for further implementations.
 
 ### Components: 
 * Edge extension
 * Backend python server to handle and create anki flashcards using the edge extention shared data.
 * Anki local deployment
-* AnkiConnect Add-on 
+* AnkiConnect Add-on
 
+### How Does It Work?:
+Using the Browser extension, 
+1) The user can select the text(which becomes the answer) they want to create the Flashcard.
+2) User should provider the question to the flashcard and optional Tags in the pop-up window.
+3) After submiting the data, the details are sent to the local python server (it can also be a remote host), where the data received from the user machine is processed and deck and flashcards are created.
+
+Note: If there is any error's raised during the Flashcards creation, then these errors only recorded in the python server, No feedback is given to the enduser. 
 
 
 ### Usage Instructions:
@@ -24,13 +30,16 @@ And after installing, download the AnkiConnect Add-on (Tools/Add-Ons/Get-Addons)
 
 B) Run the python backend server and make sure your machine can reach this backend server.
 
+`Change the global variables, if required in the python script`
+
 `python.exe py_server.py`
 
 `E:\Anki-Edge-Extension> python.exe .\py_server.py`
 
 ![alt text](images\image-5.png)
 
-C) 1) Launch Edge Browser and open extensions management page `edge://extensions/` and Enable `Developer mode`
+C) Install Anki Browser Extension
+1) Launch Edge Browser and open extensions management page `edge://extensions/` and Enable `Developer mode`
 ![alt text](images\image.png) 
 
 2) Use `Load unpacked` option to selec the folder where the extension is located ![alt text](images\image-1.png)

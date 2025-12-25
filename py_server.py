@@ -2,6 +2,12 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 from urllib import request
 
+ANKI_HOST = "127.0.0.1"
+ANKI_PORT = "8765"
+ANKI_URL = f"http://{ANKI_HOST}:{ANKI_PORT}"
+PYTHON_SERVER_PORT = 8080
+PYTHON_SERVER_IP = "localhost"
+
 class FlashcardHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
@@ -31,7 +37,7 @@ class FlashcardHandler(BaseHTTPRequestHandler):
             "action": "deckNames",
             "version": 6
         }
-        req = request.Request("http://127.0.0.1:8765", data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+        req = request.Request(ANKI_URL, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
         try:
             response = request.urlopen(req)
             result = json.loads(response.read())
@@ -48,9 +54,9 @@ class FlashcardHandler(BaseHTTPRequestHandler):
                 "deck": deck_name
             }
         }
-        req = request.Request("http://127.0.0.1:8765", data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+        req = request.Request(ANKI_URL, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
         try:
-            response = request.urlopen(req)
+            _ = request.urlopen(req)
             print(f"Created deck: {deck_name}")
         except Exception as e:
             print(f"Error creating deck '{deck_name}':", e)
@@ -72,19 +78,17 @@ class FlashcardHandler(BaseHTTPRequestHandler):
             }
         }
         print(f"Sending card to deck: {deck_name}")
-        req = request.Request("http://127.0.0.1:8765", data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+        req = request.Request(ANKI_URL, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
         try:
             response = request.urlopen(req)
             anki_codes  =json.loads(response.read())
             if anki_codes.get("error") != None and anki_codes.get("error") == "cannot create note because it is a duplicate":
-                # print(f"Anki error for deck '{deck_name}':", anki_codes.get("error"))
-                # print(payload)
                 card['question'] = card['question'] + '(1)' 
                 self.send_to_anki(card, deck_name)
         except Exception as e:
             print(f"Anki error for deck '{deck_name}':", e)
 
 if __name__ == "__main__":
-    server = HTTPServer(("localhost", 8080), FlashcardHandler)
-    print("Server running on http://localhost:8080")
+    server = HTTPServer((PYTHON_SERVER_IP, PYTHON_SERVER_PORT), FlashcardHandler)
+    print(f"Server running on http://{PYTHON_SERVER_IP}:{PYTHON_SERVER_PORT}")
     server.serve_forever()
