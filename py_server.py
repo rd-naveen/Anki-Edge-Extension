@@ -9,7 +9,7 @@ PYTHON_SERVER_PORT = 8080
 PYTHON_SERVER_IP = "localhost"
 
 class FlashcardHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
+    def do_post(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         flashcard = json.loads(post_data)
@@ -37,7 +37,9 @@ class FlashcardHandler(BaseHTTPRequestHandler):
             "action": "deckNames",
             "version": 6
         }
-        req = request.Request(ANKI_URL, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+        req = request.Request(ANKI_URL,
+                              data=json.dumps(payload).encode(),
+                              headers={"Content-Type": "application/json"})
         try:
             response = request.urlopen(req)
             result = json.loads(response.read())
@@ -54,7 +56,9 @@ class FlashcardHandler(BaseHTTPRequestHandler):
                 "deck": deck_name
             }
         }
-        req = request.Request(ANKI_URL, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+        req = request.Request(ANKI_URL,
+                              data=json.dumps(payload).encode(),
+                              headers={"Content-Type": "application/json"})
         try:
             _ = request.urlopen(req)
             print(f"Created deck: {deck_name}")
@@ -78,12 +82,15 @@ class FlashcardHandler(BaseHTTPRequestHandler):
             }
         }
         print(f"Sending card to deck: {deck_name}")
-        req = request.Request(ANKI_URL, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+        req = request.Request(ANKI_URL,
+                              data=json.dumps(payload).encode(),
+                              headers={"Content-Type": "application/json"})
         try:
             response = request.urlopen(req)
             anki_codes  =json.loads(response.read())
-            if anki_codes.get("error") != None and anki_codes.get("error") == "cannot create note because it is a duplicate":
-                card['question'] = card['question'] + '(1)' 
+            if anki_codes.get("error") is not None \
+                and anki_codes.get("error") == "cannot create note because it is a duplicate":
+                card['question'] = card['question'] + '(1)'
                 self.send_to_anki(card, deck_name)
         except Exception as e:
             print(f"Anki error for deck '{deck_name}':", e)
